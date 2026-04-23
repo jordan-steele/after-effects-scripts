@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: manifest-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,32 +25,29 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Generate manifest.json
-        run: node .github/scripts/generate-manifest.mjs
-
       - name: Generate README.md
         run: node .github/scripts/generate-readme.mjs
 
-      - name: Update README on main
+      - name: Verify generated README.md
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add README.md
-          git diff --cached --quiet && echo "No changes to README.md." && exit 0
-          git commit -m "docs: update README.md [skip ci]"
-          git push origin HEAD:main
+          if [ -n "$(git status --porcelain --untracked-files=all -- README.md)" ]; then
+            echo "README.md is out of date. Run: node .github/scripts/generate-readme.mjs"
+            exit 1
+          fi
 
       - name: Deploy to dist branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          node .github/scripts/generate-manifest.mjs
+
           # Capture the generated artifacts before switching branches
           rm -rf /tmp/ae-basecamp-dist
           mkdir -p /tmp/ae-basecamp-dist
           cp manifest.json /tmp/ae-basecamp-dist/manifest.json
           cp -R icons /tmp/ae-basecamp-dist/icons
+          rm -f manifest.json
 
           # Switch to (or create) the dist branch — orphan so it stays minimal
           if git ls-remote --exit-code --heads origin dist; then

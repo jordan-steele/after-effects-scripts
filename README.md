@@ -12,9 +12,7 @@ Licensed under the GNU GPL v3.0. See `LICENSE` for details.
 2. Download the corresponding `.jsx` file.
 3. In After Effects, go to `File > Scripts > Run Script File...` and choose the downloaded script.
 
-## Script Catalog
-
-Generated from `manifest.json`. Current catalog: 65 scripts across 7 categories.
+Current catalog: 65 scripts across 7 categories.
 
 ## Categories
 

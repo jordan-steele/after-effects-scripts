@@ -2,17 +2,14 @@
 /**
  * README generator for After Effects Scripts.
  *
- * Reads manifest.json from the repo root and generates a catalog-style
+ * Reads script metadata directly from the repo and generates a catalog-style
  * README.md grouped by category.
  */
 
-import { readFileSync, writeFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
+import { ROOT, collectCatalogScripts } from './lib/catalog.mjs';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..', '..');
-const MANIFEST_PATH = join(ROOT, 'manifest.json');
 const README_PATH = join(ROOT, 'README.md');
 
 const CATEGORY_ORDER = [
@@ -91,8 +88,7 @@ function buildCategorySection(category, scripts) {
 }
 
 function main() {
-  const manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf8'));
-  const scripts = [...manifest.scripts].sort((a, b) => a.order.localeCompare(b.order));
+  const scripts = collectCatalogScripts(ROOT);
 
   const categories = new Map();
   for (const script of scripts) {
@@ -108,6 +104,8 @@ function main() {
 
   const lines = [
     ...STATIC_HEADER,
+    `Current catalog: ${scripts.length} scripts across ${orderedCategories.length} categories.`,
+    '',
     '## Categories',
     '',
     ...orderedCategories.map(category => `- ${category}: ${categories.get(category).length}`),
