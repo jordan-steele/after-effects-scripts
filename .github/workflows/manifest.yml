@@ -1,0 +1,68 @@
+name: Generate Manifest
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate manifest.json
+        run: node .github/scripts/generate-manifest.mjs
+
+      - name: Generate README.md
+        run: node .github/scripts/generate-readme.mjs
+
+      - name: Update README on main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add README.md
+          git diff --cached --quiet && echo "No changes to README.md." && exit 0
+          git commit -m "docs: update README.md [skip ci]"
+          git push origin HEAD:main
+
+      - name: Deploy to dist branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Capture the generated artifacts before switching branches
+          rm -rf /tmp/ae-basecamp-dist
+          mkdir -p /tmp/ae-basecamp-dist
+          cp manifest.json /tmp/ae-basecamp-dist/manifest.json
+          cp -R icons /tmp/ae-basecamp-dist/icons
+
+          # Switch to (or create) the dist branch — orphan so it stays minimal
+          if git ls-remote --exit-code --heads origin dist; then
+            git fetch origin dist
+            git checkout dist
+            git reset --hard origin/dist
+          else
+            git checkout --orphan dist
+            git rm -rf . --quiet
+          fi
+
+          # Place the generated artifacts and commit
+          rm -rf manifest.json icons
+          cp /tmp/ae-basecamp-dist/manifest.json manifest.json
+          cp -R /tmp/ae-basecamp-dist/icons icons
+          git add manifest.json icons
+          git diff --cached --quiet && echo "No changes to dist artifacts." && exit 0
+          git commit -m "chore: update dist artifacts [skip ci]"
+          git push origin dist
