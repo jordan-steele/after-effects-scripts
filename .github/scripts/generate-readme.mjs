@@ -40,8 +40,6 @@ const STATIC_HEADER = [
   '2. Download the corresponding `.jsx` file.',
   '3. In After Effects, go to `File > Scripts > Run Script File...` and choose the downloaded script.',
   '',
-  '## Script Catalog',
-  '',
 ];
 
 function escapeCell(value) {
@@ -110,8 +108,6 @@ function main() {
 
   const lines = [
     ...STATIC_HEADER,
-    `Generated from \`manifest.json\`. Current catalog: ${scripts.length} scripts across ${orderedCategories.length} categories.`,
-    '',
     '## Categories',
     '',
     ...orderedCategories.map(category => `- ${category}: ${categories.get(category).length}`),
