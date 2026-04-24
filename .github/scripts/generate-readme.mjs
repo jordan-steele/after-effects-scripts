@@ -29,8 +29,6 @@ const STATIC_HEADER = [
   '',
   'These tools were developed mainly for my own personal workflow and may not have been tested very thoroughly. As After Effects evolves, some scripts may stop working or need maintenance. Run them at your own discretion.',
   '',
-  'Licensed under the GNU GPL v3.0. See `LICENSE` for details.',
-  '',
   '## Installation Instructions',
   '',
   '1. Open the script you want from the catalog below.',
@@ -104,8 +102,6 @@ function main() {
 
   const lines = [
     ...STATIC_HEADER,
-    `Current catalog: ${scripts.length} scripts across ${orderedCategories.length} categories.`,
-    '',
     '## Categories',
     '',
     ...orderedCategories.map(category => `- ${category}: ${categories.get(category).length}`),

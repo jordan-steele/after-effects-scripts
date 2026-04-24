@@ -4,15 +4,11 @@ A collection of After Effects utilities for KBar, Tool Launcher, Quick Menu, or 
 
 These tools were developed mainly for my own personal workflow and may not have been tested very thoroughly. As After Effects evolves, some scripts may stop working or need maintenance. Run them at your own discretion.
 
-Licensed under the GNU GPL v3.0. See `LICENSE` for details.
-
 ## Installation Instructions
 
 1. Open the script you want from the catalog below.
 2. Download the corresponding `.jsx` file.
 3. In After Effects, go to `File > Scripts > Run Script File...` and choose the downloaded script.
-
-Current catalog: 65 scripts across 7 categories.
 
 ## Categories
 
